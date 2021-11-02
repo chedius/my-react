@@ -4,25 +4,29 @@ export default class List extends Component {
   constructor(props) {
     super(props);
     this.state = { items: [],
-                   text: ''  
+                   text: '',
+                   addCount:  0, //add button
+                   delCount:  0, //del button
+                   curCount:  0  //total items 
                   };
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    
   }
 
   onChangeValue = e => {
     this.setState({ value: e.target.value });
   };
-  onAddItem = () => {
-    this.setState(state => {
-      const list = [...state.list, {id:state.countIds, title:state.value}];
-      const countIds = state.countIds + 1;
-      const count = state.count + 1;
-      const countAdd = state.countAdd + 1;
-      return {list, value: '', count, countAdd, countIds};
-    });
-  };
 
+    delElem= () =>{
+      this.state.items.pop();
+      this.setState({delCount: this.state.delCount + 1});
+    }
+
+    addElem= () =>{
+      this.state.items.push({text: Math.random()});
+      this.setState({addCount: this.state.addCount + 1});
+      this.setState({curCount: this.state.curCount + 1});
+      }
 
   render() {
     return (
@@ -30,26 +34,14 @@ export default class List extends Component {
         <h3>List of elements</h3>
 
         <form onSubmit={this.handleSubmit}>
-          <lable htmlFor="elem">Enter new element </lable>
-          <input
-            id="elem"
-            onChange={this.handleChange}
-            value={this.state.text}
-            style={{
-              width: "200px",
-              flex: 1,
-              justifyContent: 'space-between',
-              padding: 4,
-              flexDirection: 'row',
-              alignItems: 'center'
-            }}
-          />
-          <button
-            id="AddButton"
-            style={{ padding: 4, width: "90px" }}
-          >Submit</button>
-
+          <lable htmlFor="elem"> You can manage with list using theese buttons </lable>
+          <input style={{cursor: 'pointer'}} type="button" value="Add" onClick={this.addElem}></input>
+          <input style={{cursor: 'pointer'}} type="button" value="Delete" onClick={this.delElem}></input>
         </form>
+        <div>
+          {this.state.delCount} elements were deleted
+           {this.state.addCount} elements were added
+        </div>
         <FooList items={this.state.items} />
       </div>
     )
@@ -57,30 +49,19 @@ export default class List extends Component {
   handleChange(e) {
     this.setState({ text: e.target.value });
   }
-  handleSubmit(e) {
-    e.preventDefault();
-    if (this.state.text.length === 0) {
-      return;
-    }
-    const newItem = {
-      text: this.state.text,
-      id: Date.now()
-    };
-    this.setState(state => ({
-      items: state.items.concat(newItem),
-      text: ''
-    }));
-  }
+  
 }
 
 class FooList extends Component {
   render() {
     return (
       <ul>
+        Total:
+        {this.props.items.length} elements 
         {this.props.items.map(item => (
-          <li key={item.id}>{item.text}</li>
-        ))}
-      </ul>
+        <li key={item.id}>{item.text}</li>
+      ))}
+    </ul>
     );
   }
 }
